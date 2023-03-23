@@ -8,7 +8,7 @@ import { UserContext } from '../context/authContext';
 export default function Pricing() {
 	const user = useContext(UserContext);
 	const [isActive, setIsActive] = useState(1);
-	const [country, setCountry] = useState('Abia');
+	const [country, setCountry] = useState('London');
 
 	const setUserCountry = async () => {
 		if (navigator) {
