@@ -48,7 +48,7 @@ function PriceCard({
 			)}
 			<PriceCards>
 				<h3 className='price-card-type'>{type}</h3>
-				<h1 className='price-card-price'>₦{price}</h1>
+				<h1 className='price-card-price'>{`${country=== "Nigeria"?"₦":"$"}${price}`}</h1>
 				<p className='price-card-description'>{description}</p>
 				<div className='price-card-points'>
 					<p className='price-point-title'>{title}</p>
@@ -95,7 +95,7 @@ function PriceCard({
 					{planId === '' ? (
 						<PaymentCta onClick={pricingToggle}>Try Now</PaymentCta>
 					) : (
-						<PaystackPayment plan={planId} country={country} />
+						<PaystackPayment period={type} toggle={loginToggleModal} plan={planId} country={country} />
 					)}
 				</div>
 			</PriceCards>

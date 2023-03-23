@@ -1,33 +1,63 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { BsCheck } from 'react-icons/bs';
+import axios from 'axios';
+import { useContext, useEffect, useState } from 'react';
 
 import styled from 'styled-components';
-import PaystackPayment from '../components/PaystackPayment';
 import PriceCard from '../components/PriceCard';
 import { UserContext } from '../context/authContext';
-import timeZoneCityToCountry from '../utils/countries';
 
 export default function Pricing() {
 	const user = useContext(UserContext);
 	const [isActive, setIsActive] = useState(1);
-	const [country, setCountry] = useState('');
+	const [country, setCountry] = useState('Abia');
+
+	const setUserCountry = async () => {
+		if (navigator) {
+			let latitude, longitude;
+			navigator.geolocation.getCurrentPosition(async function (position) {
+				latitude = position.coords.latitude;
+				longitude = position.coords.longitude;
+				try {
+					const response = await axios(
+						`http://api.geonames.org/countryCodeJSON?lat=${latitude}&lng=${longitude}&username=codewarsfx`
+					);
+	
+					if (response) {
+						// setCountry(response.data.countryName);
+					}
+				} catch (error) {
+					console.log('an error occurred while trying to retrieve country');
+				}
+			});
+		
+		} 
+	};
+
+	const priceForCountry = (country, period) => {
+		console.log("price for",country)
+		const pricePerPeriod = {
+			Annual: country === 'Nigeria' ? 9000 : 48,
+			BiAnnual: country === 'Nigeria' ? 5000 : 22,
+			Quaterly: country === 'Nigeria' ? 2000 : 15
+		}
+
+		return pricePerPeriod[period]
+	}
 
 	const Plan1 = [
 		{
 			type: 'Free',
-			price: '0',
+			price: '0' ,
 			description: 'per user/month billed annually',
 			title: 'For small teams',
 			info1: 'Browse 	All Screens Per Company',
 			info2: 'Unlimited Filter and Search results',
 			info3: 'Unlimited Collections',
 			info4: 'Unlimited Single Downloads',
-
 			planId: '',
 		},
 		{
 			type: 'Annual',
-			price: '9000',
+			price: priceForCountry(country,'Annual'),
 			description: 'per user/month billed annually',
 			title: 'For small teams',
 			info1: 'Browse All Screens Per Company',
@@ -54,8 +84,8 @@ export default function Pricing() {
 			planId: '',
 		},
 		{
-			type: 'Bi-Annual',
-			price: '5000',
+			type: 'BiAnnual',
+			price: priceForCountry(country,'BiAnnual'),
 			description: 'per user/month billed bi-annually',
 			title: 'For small teams',
 			info1: 'Browse All Screens Per Company',
@@ -77,12 +107,11 @@ export default function Pricing() {
 			info2: 'Unlimited Filter and Search results',
 			info3: 'Unlimited Collections',
 			info4: 'Unlimited Single Downloads',
-
 			planId: '',
 		},
 		{
 			type: 'Quaterly',
-			price: '2000',
+			price: priceForCountry(country,'Quaterly'),
 			description: 'per user/month billed quaterly',
 			title: 'For small teams',
 			info1: 'Browse All Screens Per Company',
@@ -106,36 +135,33 @@ export default function Pricing() {
 
 	//track users' location information
 	useEffect(() => {
-		let userCity: string;
-		let userCountry: string;
-		let userTimeZone: string;
-
-		if (Intl) {
-			//gets the Continent information and city and returns a string
-			//"Africa/Nigeria"
-			userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-			//reomves the slash and converts the string to an array
-			let tzArr = userTimeZone.split('/');
-
-			//gets the last element of the array which is the name of the city
-			userCity = tzArr[tzArr.length - 1];
-
-			//checks the dictionary and returns the country name
-			userCountry = timeZoneCityToCountry[userCity];
-
-			//adds the country name to the useState
-			setCountry(timeZoneCityToCountry[userCity]);
-
-			console.log(country);
-		}
-	}, [country]);
+		// let userCity: string;
+		// let userCountry: string;
+		// let userTimeZone: string;
+		// if (Intl) {
+		// 	//gets the Continent information and city and returns a string
+		// 	//"Africa/Nigeria"
+		// 	userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		// 	//reomves the slash and converts the string to an array
+		// 	let tzArr = userTimeZone.split('/');
+		// 	//gets the last element of the array which is the name of the city
+		// 	userCity = tzArr[tzArr.length - 1];
+		// 	//checks the dictionary and returns the country name
+		// 	userCountry = timeZoneCityToCountry[userCity];
+		// 	//adds the country name to the useState
+		// 	setCountry(timeZoneCityToCountry[userCity]);
+		// 	console.log(country);
+		// }
+		//get user Location
+		setUserCountry()
+	}, []);
 
 	const buttonDetails = [
 		{ id: 1, text: 'Annual' },
 		{ id: 2, text: 'Bi-Annual' },
 		{ id: 3, text: 'Quaterly' },
 	];
+
 	return (
 		<PricingWrapper>
 			<section className='pricing-text'>

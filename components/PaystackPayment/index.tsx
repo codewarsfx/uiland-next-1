@@ -4,6 +4,7 @@ import { usePaystackPayment } from 'react-paystack';
 import { PaystackProps } from 'react-paystack/dist/types';
 import { UserContext } from '../../context/authContext';
 import styled from 'styled-components';
+import Script from 'next/script';
 
 type referenceObj = {
 	message: string;
@@ -13,10 +14,22 @@ type referenceObj = {
 	transaction: string;
 	trxref: string;
 };
-const PaystackPayment = ({ plan, country }) => {
+const PaystackPayment = ({ plan, country, toggle,period }) => {
 	const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_TEST_KEY;
 	const user = useContext(UserContext);
 	const router = useRouter();
+
+	const getLink = (period) => {
+		switch (period) { 
+			case 'Annual':
+				return 'https://uiland.lemonsqueezy.com/checkout/buy/f0629080-64bc-4b7e-8a0a-4571eed6eb6b'
+			case 'BiAnnual':
+				return 'https://uiland.lemonsqueezy.com/checkout/buy/2ec9e879-5b26-4b67-b3ce-15dadf9cc304'
+			case 'Quaterly':
+				return 'https://uiland.lemonsqueezy.com/checkout/buy/b2412321-6b91-4081-a6e7-836d677d5c3e'
+
+		}
+	}
 
 	/**
  * @description returns the data to input state
@@ -70,6 +83,10 @@ const PaystackPayment = ({ plan, country }) => {
 	};
 	const submit = (e: { preventDefault: () => void }) => {
 		e.preventDefault();
+		if (!user) {
+			toggle()
+			return
+		}
 		initializePayment(onSuccess, onClose);
 	};
 
@@ -87,9 +104,7 @@ const PaystackPayment = ({ plan, country }) => {
 					) : (
 						<div>
 							<PaymentCta>
-								<a href='https://uiland.lemonsqueezy.com/checkout/buy/50e4cf79-4965-47e2-bfb3-d55c859f8706'>
-									Get started
-								</a>
+							<a href={getLink(period)} className="lemonsqueezy-button" >Get Started</a><Script src="https://assets.lemonsqueezy.com/lemon.js" defer></Script>
 							</PaymentCta>
 						</div>
 					)}
